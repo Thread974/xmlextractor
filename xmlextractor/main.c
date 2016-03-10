@@ -30,19 +30,27 @@ void processNode(xmlTextReaderPtr reader) {
      </node>
      */
     if (!xmlStrcmp(name, BAD_CAST "tag")) {
-        printf("%d %d %s %s %d",
+        xmlChar *k;
+        xmlChar *v;
+        k = xmlTextReaderGetAttribute(reader, BAD_CAST "k");
+        v = xmlTextReaderGetAttribute(reader, BAD_CAST "v");
+        printf("%d %d %s %s %d k:%s v:%s",
                xmlTextReaderDepth(reader),
                xmlTextReaderNodeType(reader),
                xmlTextReaderConstPrefix(reader),
                name,
-               xmlTextReaderIsEmptyElement(reader));
-        if (value == NULL)
+               xmlTextReaderIsEmptyElement(reader),
+               k ? k : BAD_CAST "NULL", v ? v : BAD_CAST "NULL");
+        
+        if (value == NULL) {
             printf("\n");
-        else {
+        } else {
             printf(" %s\n", value);
             xmlFree(value);
         }
+    } else if (!xmlStrcmp(name, BAD_CAST "node")) {
     }
+
     xmlFree(name);
 }
 
