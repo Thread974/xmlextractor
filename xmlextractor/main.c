@@ -85,7 +85,7 @@ void processNode(xmlTextReaderPtr reader) {
         }
         if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_END_ELEMENT) {
             if (g_node_info.peak) {
-                printf("%f x %f %s %d\n", g_node_info.lat, g_node_info.lon, g_node_info.name, g_node_info.ele);
+                printf("{ %f, %f, \"%s\", %d },\n", g_node_info.lat, g_node_info.lon, g_node_info.name, g_node_info.ele);
                 if (g_node_info.name)
                     xmlFree(g_node_info.name);
                 memset(&g_node_info, 0, sizeof(g_node_info));
