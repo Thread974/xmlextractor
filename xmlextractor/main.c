@@ -69,12 +69,15 @@ int streamFile(const char *filename) {
 }
 
 int main(int argc, const char * argv[]) {
+    const char *arg;
+
     // insert code here...
     if (argc < 2) {
-        printf("Usage: %s %s\n", argv[0], "<filename>");
-        return -1;
+        arg = "geo.xml";
+    } else {
+        arg = argv[1];
     }
 
-    streamFile(argv[1]);
+    streamFile(arg);
     return 0;
 }
