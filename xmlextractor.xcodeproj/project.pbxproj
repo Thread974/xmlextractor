@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		562C51A31C915053009C2F50 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 562C51A21C915053009C2F50 /* main.c */; };
+		562C51AA1C91511C009C2F50 /* libxml2.2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 562C51A91C91511C009C2F50 /* libxml2.2.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,7 @@
 /* Begin PBXFileReference section */
 		562C519F1C915053009C2F50 /* xmlextractor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xmlextractor; sourceTree = BUILT_PRODUCTS_DIR; };
 		562C51A21C915053009C2F50 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		562C51A91C91511C009C2F50 /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = usr/lib/libxml2.2.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				562C51AA1C91511C009C2F50 /* libxml2.2.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,6 +44,7 @@
 		562C51961C915053009C2F50 = {
 			isa = PBXGroup;
 			children = (
+				562C51A91C91511C009C2F50 /* libxml2.2.tbd */,
 				562C51A11C915053009C2F50 /* xmlextractor */,
 				562C51A01C915053009C2F50 /* Products */,
 			);
@@ -207,6 +211,7 @@
 		562C51A71C915053009C2F50 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -214,6 +219,7 @@
 		562C51A81C915053009C2F50 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = /usr/include/libxml2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
