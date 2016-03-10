@@ -24,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		56175FA01C916F5F0099231D /* geo.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = geo.xml; sourceTree = "<group>"; };
 		562C519F1C915053009C2F50 /* xmlextractor */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = xmlextractor; sourceTree = BUILT_PRODUCTS_DIR; };
 		562C51A21C915053009C2F50 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		562C51A91C91511C009C2F50 /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = usr/lib/libxml2.2.tbd; sourceTree = SDKROOT; };
@@ -62,6 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				562C51A21C915053009C2F50 /* main.c */,
+				56175FA01C916F5F0099231D /* geo.xml */,
 			);
 			path = xmlextractor;
 			sourceTree = "<group>";
@@ -243,6 +245,7 @@
 				562C51A81C915053009C2F50 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
