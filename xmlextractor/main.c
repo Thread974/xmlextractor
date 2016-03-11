@@ -19,7 +19,7 @@ struct node_info {
     xmlChar *name;
     float lat;
     float lon;
-    int ele;
+    float ele;
     int peak;
 };
 
@@ -45,17 +45,22 @@ void processNode(xmlTextReaderPtr reader) {
         xmlChar *v;
         k = xmlTextReaderGetAttribute(reader, BAD_CAST "k");
         v = xmlTextReaderGetAttribute(reader, BAD_CAST "v");
+        /*
         printf("%d %d %s %d k:%s v:%s",
                xmlTextReaderDepth(reader),
                xmlTextReaderNodeType(reader),
                name,
                xmlTextReaderIsEmptyElement(reader),
                k ? k : BAD_CAST "NULL", v ? v : BAD_CAST "NULL");
-        
+        */
         if (value == NULL) {
+            /*
             printf("\n");
+             */
         } else {
+            /*
             printf(" %s\n", value);
+             */
             xmlFree(value);
         }
         
@@ -66,7 +71,7 @@ void processNode(xmlTextReaderPtr reader) {
         }
 
         if (!xmlStrcmp(k, BAD_CAST "ele")) {
-            g_node_info.ele = atoi((char *)v);
+            g_node_info.ele = atof((char *)v);
         }
 
         if (!xmlStrcmp(k, BAD_CAST "natural") && !xmlStrcmp(v, BAD_CAST "peak")) {
@@ -85,12 +90,14 @@ void processNode(xmlTextReaderPtr reader) {
         }
         if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_END_ELEMENT) {
             if (g_node_info.peak) {
-                printf("{ %f, %f, \"%s\", %d },\n", g_node_info.lat, g_node_info.lon, g_node_info.name, g_node_info.ele);
+                printf("{ \"%s\", %f, %f, %f },\n", g_node_info.name, g_node_info.lat, g_node_info.lon, g_node_info.ele);
                 if (g_node_info.name)
                     xmlFree(g_node_info.name);
                 memset(&g_node_info, 0, sizeof(g_node_info));
             } else {
+                /*
                 printf("no peak found\n");
+                 */
             }
         }
     } else {
