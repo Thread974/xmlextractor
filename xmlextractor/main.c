@@ -101,20 +101,22 @@ int streamFile(const char *filename) {
     } else {
         reader = xmlReaderForFd(fileno(stdin), NULL, NULL, 0);
     }
-    if (reader != NULL) {
-        ret = xmlTextReaderRead(reader);
-        while (ret == 1) {
-            processNode(reader);
-            ret = xmlTextReaderRead(reader);
-        }
-        xmlFreeTextReader(reader);
-        if (ret != 0) {
-            printf("%s : failed to parse\n", filename);
-        }
-    } else {
-        printf("Unable to open %s\n", filename);
+
+    if (!reader) {
+        printf("Unable to open %s\n", filename ? filename : "stdin");
+        return -1;
     }
 
+    ret = xmlTextReaderRead(reader);
+    while (ret == 1) {
+        processNode(reader);
+        ret = xmlTextReaderRead(reader);
+    }
+    xmlFreeTextReader(reader);
+    if (ret != 0) {
+        printf("%s : failed to parse, err %d\n", filename, ret);
+    }
+    
     return ret;
 }
 
