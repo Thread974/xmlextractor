@@ -116,7 +116,11 @@ int streamFile(const char *filename) {
     xmlTextReaderPtr reader;
     int ret;
     
-    reader = xmlNewTextReaderFilename(filename);
+    if (filename) {
+        reader = xmlNewTextReaderFilename(filename);
+    } else {
+        reader = xmlReaderForFd(fileno(stdin), NULL, NULL, 0);
+    }
     if (reader != NULL) {
         ret = xmlTextReaderRead(reader);
         while (ret == 1) {
@@ -139,7 +143,7 @@ int main(int argc, const char * argv[]) {
 
     // insert code here...
     if (argc < 2) {
-        arg = "geo.xml";
+        arg = NULL;
     } else {
         arg = argv[1];
     }
