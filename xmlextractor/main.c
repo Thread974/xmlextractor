@@ -26,12 +26,11 @@ struct node_info {
 static struct node_info g_node_info;
 
 void processNode(xmlTextReaderPtr reader) {
-    xmlChar *name, *value; // This is UTF8 encoded string, use BAD_CAST to cast from ANSI char *
+    xmlChar *name, *att1, *att2; // This is UTF8 encoded string, use BAD_CAST to cast from ANSI char *
     /* handling of a node in the tree */
     name = xmlTextReaderName(reader);
-    if (name == NULL)
-        name = xmlStrdup(BAD_CAST "--");
-    value = xmlTextReaderValue(reader);
+    if (!name)
+        return;
     
     /*
      <node id="26863762" lat="44.1209581" lon="3.5815802" version="13" timestamp="2013-02-03T00:25:28Z" changeset="14890502" uid="16038" user="krysst">
@@ -41,72 +40,53 @@ void processNode(xmlTextReaderPtr reader) {
      </node>
      */
     if (!xmlStrcmp(name, BAD_CAST "tag")) {
-        xmlChar *k;
-        xmlChar *v;
-        k = xmlTextReaderGetAttribute(reader, BAD_CAST "k");
-        v = xmlTextReaderGetAttribute(reader, BAD_CAST "v");
+        att1 = xmlTextReaderGetAttribute(reader, BAD_CAST "k");
+        att2 = xmlTextReaderGetAttribute(reader, BAD_CAST "v");
         /*
-        printf("%d %d %s %d k:%s v:%s",
-               xmlTextReaderDepth(reader),
-               xmlTextReaderNodeType(reader),
-               name,
-               xmlTextReaderIsEmptyElement(reader),
-               k ? k : BAD_CAST "NULL", v ? v : BAD_CAST "NULL");
-        */
-        if (value == NULL) {
-            /*
-            printf("\n");
-             */
-        } else {
-            /*
-            printf(" %s\n", value);
-             */
-            xmlFree(value);
-        }
+         printf("%d %d %s %d k:%s v:%s",
+         xmlTextReaderDepth(reader),
+         xmlTextReaderNodeType(reader),
+         name,
+         xmlTextReaderIsEmptyElement(reader),
+         k ? k : BAD_CAST "NULL", v ? v : BAD_CAST "NULL");
+         */
         
-        if (!xmlStrcmp(k, BAD_CAST "name")) {
+        if (!xmlStrcmp(att1, BAD_CAST "name")) {
             if (g_node_info.name)
                 xmlFree(g_node_info.name);
-            g_node_info.name = xmlStrdup(v);
-        }
-
-        if (!xmlStrcmp(k, BAD_CAST "ele")) {
-            g_node_info.ele = atof((char *)v);
-        }
-
-        if (!xmlStrcmp(k, BAD_CAST "natural") && !xmlStrcmp(v, BAD_CAST "peak")) {
+            g_node_info.name = xmlStrdup(att2);
+        } else if (!xmlStrcmp(att1, BAD_CAST "ele")) {
+            g_node_info.ele = atof((char *)att2);
+        } else if (!xmlStrcmp(att1, BAD_CAST "natural") && !xmlStrcmp(att2, BAD_CAST "peak")) {
             g_node_info.peak = 1;
         }
+        if (att1)
+            xmlFree(att1);
+        if (att2)
+            xmlFree(att2);
     } else if (!xmlStrcmp(name, BAD_CAST "node")) {
-        if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_ELEMENT) {
-            xmlChar *lat;
-            xmlChar *lon;
-            lat = xmlTextReaderGetAttribute(reader, BAD_CAST "lat");
-            lon = xmlTextReaderGetAttribute(reader, BAD_CAST "lon");
-            if (lat && lon) {
-                g_node_info.lat = atof((char *)lat);
-                g_node_info.lon = atof((char *)lon);
-            }
+        switch (xmlTextReaderNodeType(reader)) {
+            case XML_READER_TYPE_ELEMENT:
+                att1 = xmlTextReaderGetAttribute(reader, BAD_CAST "lat");
+                att2 = xmlTextReaderGetAttribute(reader, BAD_CAST "lon");
+                if (att1 && att2) {
+                    g_node_info.lat = atof((char *)att1);
+                    g_node_info.lon = atof((char *)att2);
+                }
+                if (att1)
+                    xmlFree(att1);
+                if (att2)
+                    xmlFree(att2);
+                break;
+            case XML_READER_TYPE_END_ELEMENT:
+                if (g_node_info.peak) {
+                    printf("{ \"%s\", %f, %f, %f },\n", g_node_info.name, g_node_info.lat, g_node_info.lon, g_node_info.ele);
+                    if (g_node_info.name)
+                        xmlFree(g_node_info.name);
+                    memset(&g_node_info, 0, sizeof(g_node_info));
+                }
+                break;
         }
-        if (xmlTextReaderNodeType(reader) == XML_READER_TYPE_END_ELEMENT) {
-            if (g_node_info.peak) {
-                printf("{ \"%s\", %f, %f, %f },\n", g_node_info.name, g_node_info.lat, g_node_info.lon, g_node_info.ele);
-                if (g_node_info.name)
-                    xmlFree(g_node_info.name);
-                memset(&g_node_info, 0, sizeof(g_node_info));
-            } else {
-                /*
-                printf("no peak found\n");
-                 */
-            }
-        }
-    } else {
-        /*
-        printf("%d %d %s\n",
-               xmlTextReaderDepth(reader),
-               xmlTextReaderNodeType(reader),
-               name);
-         */
     }
 
     xmlFree(name);
