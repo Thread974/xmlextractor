@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include <libxml/xmlstring.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -24,13 +25,14 @@ struct node_info {
 };
 
 static struct node_info g_node_info;
+static int binout = 0;
 
-void processNode(xmlTextReaderPtr reader) {
+int processNode(xmlTextReaderPtr reader) {
     xmlChar *name, *att1, *att2; // This is UTF8 encoded string, use BAD_CAST to cast from ANSI char *
     /* handling of a node in the tree */
     name = xmlTextReaderName(reader);
     if (!name)
-        return;
+        return -1;
     
     /*
      <node id="26863762" lat="44.1209581" lon="3.5815802" version="13" timestamp="2013-02-03T00:25:28Z" changeset="14890502" uid="16038" user="krysst">
@@ -80,7 +82,38 @@ void processNode(xmlTextReaderPtr reader) {
                 break;
             case XML_READER_TYPE_END_ELEMENT:
                 if (g_node_info.peak) {
-                    printf("{ \"%s\", %f, %f, %f },\n", g_node_info.name, g_node_info.lat, g_node_info.lon, g_node_info.ele);
+                    if (binout) {
+                        if (write(fileno(stdout), &g_node_info.lat, sizeof(g_node_info.lat)) != sizeof(g_node_info.lat)) {
+                            return -2;
+                        }
+                        if (write(fileno(stdout), &g_node_info.lon, sizeof(g_node_info.lon)) != sizeof(g_node_info.lon)) {
+                            return -3;
+                        }
+                        if (write(fileno(stdout), &g_node_info.ele, sizeof(g_node_info.ele)) != sizeof(g_node_info.ele)) {
+                            return -4;
+                        }
+                        if (g_node_info.name) {
+                            unsigned char len = 0;
+                            if (xmlStrlen(g_node_info.name) < 256)
+                                len = xmlStrlen(g_node_info.name);
+                            else
+                                return -8;
+
+                            if (write(fileno(stdout), &len, sizeof(len)) != sizeof(len)) {
+                                return -5;
+                            }
+                            if (write(fileno(stdout), g_node_info.name, len) != len) {
+                                return -6;
+                            }
+                        } else {
+                            unsigned char len = 0;
+                            if (write(fileno(stdout), &len, sizeof(len)) != sizeof(len)) {
+                                return -7;
+                            }
+                        }
+                    } else {
+                        printf("{ \"%s\", %f, %f, %f },\n", g_node_info.name, g_node_info.lat, g_node_info.lon, g_node_info.ele);
+                    }
                     if (g_node_info.name)
                         xmlFree(g_node_info.name);
                     memset(&g_node_info, 0, sizeof(g_node_info));
@@ -90,6 +123,7 @@ void processNode(xmlTextReaderPtr reader) {
     }
 
     xmlFree(name);
+    return 0;
 }
 
 int streamFile(const char *filename) {
@@ -109,7 +143,9 @@ int streamFile(const char *filename) {
 
     ret = xmlTextReaderRead(reader);
     while (ret == 1) {
-        processNode(reader);
+        ret = processNode(reader);
+        if (ret)
+            break;
         ret = xmlTextReaderRead(reader);
     }
     xmlFreeTextReader(reader);
@@ -129,6 +165,8 @@ int main(int argc, const char * argv[]) {
     } else {
         arg = argv[1];
     }
+    
+    binout = 0;
 
     streamFile(arg);
     return 0;
