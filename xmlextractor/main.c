@@ -114,10 +114,11 @@ int processNode(xmlTextReaderPtr reader) {
                     } else {
                         printf("{ \"%s\", %f, %f, %f },\n", g_node_info.name, g_node_info.lat, g_node_info.lon, g_node_info.ele);
                     }
-                    if (g_node_info.name)
-                        xmlFree(g_node_info.name);
-                    memset(&g_node_info, 0, sizeof(g_node_info));
                 }
+                // Whether we found a peak or not, clear the node and start a new one, as peaks should be terminal nodes
+                if (g_node_info.name)
+                    xmlFree(g_node_info.name);
+                memset(&g_node_info, 0, sizeof(g_node_info));
                 break;
         }
     }
