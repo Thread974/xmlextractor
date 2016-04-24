@@ -15,6 +15,7 @@
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
 #include <libxml/xmlreader.h>
+#include <ctype.h>
 
 struct node_info {
     xmlChar *name;
@@ -112,7 +113,17 @@ int processNode(xmlTextReaderPtr reader) {
                             }
                         }
                     } else {
-                        printf("{ \"%s\", %f, %f, %f },\n", g_node_info.name, g_node_info.lat, g_node_info.lon, g_node_info.ele);
+                        if (g_node_info.name) {
+                            unsigned char *p = g_node_info.name;
+                            // First letter capital
+                            if (isalpha(*p))
+                                *p = toupper(*p);
+                            // Remove any " symbol that would prevent compilation
+                            while ((p = (unsigned char *)strchr((const char *)g_node_info.name, '\"'))) {
+                                *p = '\'';
+                            }
+                        }
+                        printf("{ \"%s\", %f, %f, %f },\n", (char *)g_node_info.name?:"", g_node_info.lat, g_node_info.lon, g_node_info.ele);
                     }
                 }
                 // Whether we found a peak or not, clear the node and start a new one, as peaks should be terminal nodes
